@@ -1,10 +1,24 @@
 package com.sasank.fitlog.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 import java.time.LocalDate;
 
+@Entity
 public class MealLog {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private LocalDate date;
+
+    @Enumerated(EnumType.STRING)
     private MealType mealType;
     private String foodName;
 
@@ -12,6 +26,10 @@ public class MealLog {
     private Double proteinGrams;
     private Double carbsGrams;
     private Double fatGrams;
+
+    public MealLog() {
+
+    }
 
     public MealLog(long id, LocalDate date, MealType mealType, String foodName, Integer calories, Double proteinGrams, Double carbsGrams, Double fat){
         this.id = id;

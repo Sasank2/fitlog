@@ -2,6 +2,7 @@ package com.sasank.fitlog.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -19,18 +20,18 @@ public class MealService {
 
     public MealLog addMeal(MealLog mealLog){
         validateMeal(mealLog);
-        return mealRepo.saveMeal(mealLog);
+        return mealRepo.save(mealLog);
     }
 
     public List<MealLog> getAllMeals(){
-        return mealRepo.getAllMeals();
+        return mealRepo.findAll();
     }
 
     public List<MealLog> getMealsByDate(LocalDate date){
         if (date == null) {
             throw new IllegalArgumentException("Date is required");
         }
-        return mealRepo.getMealsByDate(date);
+        return mealRepo.findByDate(date);
     }
 
     public MealLog updateMeal(long id, MealLog log){
@@ -38,22 +39,37 @@ public class MealService {
             throw new IllegalArgumentException("Invalid meal Id");
         }
         validateMeal(log);
-        MealLog updatedLog = mealRepo.updateMeal(id, log);
-        if(updatedLog == null){
-            throw new IllegalArgumentException("No meal found with id: "+ id);
+        Optional<MealLog> optionalMeal = mealRepo.findById(id);
+
+        if (optionalMeal.isEmpty()) {
+            throw new IllegalArgumentException("No meal found with id: " + id);
         }
-        return updatedLog;
+
+        MealLog existingMeal = optionalMeal.get();
+
+        existingMeal.setDate(log.getDate());
+        existingMeal.setMealType(log.getMealType());
+        existingMeal.setFoodName(log.getFoodName());
+        existingMeal.setCalories(log.getCalories());
+        existingMeal.setProteinGrams(log.getProteinGrams());
+        existingMeal.setCarbsGrams(log.getCarbsGrams());
+        existingMeal.setFatGrams(log.getFatGrams());
+
+        return mealRepo.save(existingMeal);
+
     }
 
     public void deleteMeal(long id){
         if(id <= 0){
             throw new IllegalArgumentException("Invalid meal Id");
         }
-        boolean deleted =   mealRepo.deleteMeal(id);
-        
-        if(!deleted){
+        Optional<MealLog> optionalMeal = mealRepo.findById(id);
+
+        if (optionalMeal.isEmpty()) {
             throw new IllegalArgumentException("No meal found with id: " + id);
         }
+        MealLog existingMeal = optionalMeal.get();
+        mealRepo.delete(existingMeal);
     }
 
     private void validateMeal(MealLog mealLog){

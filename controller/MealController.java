@@ -49,7 +49,7 @@ public class MealController {
     @DeleteMapping("/{id}")
     public String deleteMeal(@PathVariable long id){
         service.deleteMeal(id);
-        return "Delete entry successfull";
+        return "Delete entry successful";
     }
 
 }
